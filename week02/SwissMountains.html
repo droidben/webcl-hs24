@@ -40,14 +40,17 @@
             position: absolute;
             top: 0;
             left: 0;
-            animation: kenBurns 20s infinite alternate;
+            animation: kenBurns 30s infinite alternate;
         }
         @keyframes kenBurns {
             0% {
-                transform: scale(1);
+                transform: scale(1) translate(0, 0);
+            }
+            50% {
+                transform: scale(1.1) translate(-10%, -10%);
             }
             100% {
-                transform: scale(1.1);
+                transform: scale(1.1) translate(10%, 10%);
             }
         }
         #mountain-info {
@@ -59,12 +62,21 @@
             padding: 10px;
             border-radius: 5px;
         }
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 
 <main>
-    <div id="mountain-list"></div>
+    <div id="mountain-list">
+        <input type="text" id="search-input" placeholder="Search mountains...">
+    </div>
     <div id="mountain-display">
         <img id="mountain-image" src="" alt="Mountain Image">
         <div id="mountain-info"></div>
@@ -78,14 +90,20 @@
     const mountainList = document.getElementById('mountain-list');
     const mountainImage = document.getElementById('mountain-image');
     const mountainInfo = document.getElementById('mountain-info');
+    const searchInput = document.getElementById('search-input');
 
-    mountains.forEach(mountain => {
-        const mountainItem = document.createElement('div');
-        mountainItem.textContent = mountain.NAME;
-        mountainItem.onclick = () => displayMountain(mountain);
-        mountainList.appendChild(mountainItem);
-    });
+    // Function to display all mountains
+    function displayMountains(mountainsToDisplay) {
+        mountainList.innerHTML = '<input type="text" id="search-input" placeholder="Search mountains...">';
+        mountainsToDisplay.forEach(mountain => {
+            const mountainItem = document.createElement('div');
+            mountainItem.textContent = mountain.NAME;
+            mountainItem.onclick = () => displayMountain(mountain);
+            mountainList.appendChild(mountainItem);
+        });
+    }
 
+    // Function to display a specific mountain
     function displayMountain(mountain) {
         mountainImage.src = mountain.IMAGE_URL;
         mountainInfo.innerHTML = `
@@ -99,6 +117,21 @@
             Caption: ${mountain.CAPTION}
         `;
     }
+
+    // Initial display of all mountains
+    displayMountains(mountains);
+
+    // Search functionality
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        const filteredMountains = mountains.filter(mountain =>
+            mountain.NAME.toLowerCase().includes(query) ||
+            mountain.CANTONS.toLowerCase().includes(query) ||
+            mountain.REGION.toLowerCase().includes(query) ||
+            mountain.CAPTION.toLowerCase().includes(query)
+        );
+        displayMountains(filteredMountains);
+    });
 </script>
 
 </body>
